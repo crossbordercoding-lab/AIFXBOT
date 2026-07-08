@@ -117,7 +117,7 @@ class AnalysisEngine:
 
         # --- Recommendation Engine ---
         rec, confidence, reasoning, action, alert_price = AnalysisEngine._generate_recommendation(
-            entry, market, return_pct, risk_reward, dist_stop, dist_target, vs_50d, vs_200d, market_trend
+            entry, market, return_pct, risk_reward, dist_stop, dist_target, vs_50d, vs_200d, market_trend, unrealized_pnl
         )
         result["recommendation"] = rec
         result["confidence"] = round(confidence, 1)
@@ -138,7 +138,8 @@ class AnalysisEngine:
         dist_target: Optional[float],
         vs_50d: Optional[float],
         vs_200d: Optional[float],
-        trend: str
+        trend: str,
+        unrealized_pnl: float
     ) -> tuple:
         """
         Generate a trading recommendation based on all metrics.
@@ -271,7 +272,7 @@ class AnalysisEngine:
         reasoning_lines = [
             f"Position Analysis for {entry.get('symbol', 'Unknown')}:",
             f"  • Entry Price: ${entry.get('entry_price', 'N/A')}, Current: ${current_price:.2f}",
-            f"  • Return: {return_pct:+.2f}% (${unrealized_pnl if 'unrealized_pnl' in dir() else 'N/A'})",
+            f"  • Return: {return_pct:+.2f}% (${unrealized_pnl:,.2f})",
             f"  • Market Trend: {trend.title()}",
             "",
             "Key Signals:",

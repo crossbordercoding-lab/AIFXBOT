@@ -179,7 +179,7 @@ if __name__ == "__main__":
             print(f"\n{sym}:")
             print(f"  Price: ${data.get('current_price'):,.2f}")
             print(f"  Change: {data.get('change_pct'):+.2f}%")
-            print(f"  Market Cap: {data.get('market_cap'):,.0f}" if data.get('market_cap") else "")
+            print(f"  Market Cap: {data.get('market_cap'):,.0f}" if data.get('market_cap') else "")
             print(f"  PE Ratio: {data.get('pe_ratio')}")
         else:
             print(f"\n{sym}: ❌ Failed to fetch")
