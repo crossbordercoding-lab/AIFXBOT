@@ -61,12 +61,10 @@ def test_connection():
     print("=" * 50)
     client = SupabaseClient()
     try:
-        r = requests.get(
-            f"{client.url}/rest/v1/",
-            headers={"apikey": client.key, "Authorization": f"Bearer {client.key}"}
-        )
-        r.raise_for_status()
-        print(f"✅ Supabase connected! Status: {r.status_code}")
+        # Query the test table we just created
+        result = client.select("test_connection", "*")
+        print(f"✅ Supabase connected! Found {len(result)} row(s) in test_connection")
+        print(f"   Data: {result}")
         print("=" * 50)
         return True
     except requests.exceptions.RequestException as e:
