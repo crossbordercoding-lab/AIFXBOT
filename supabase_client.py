@@ -2,35 +2,28 @@
 AIFXBOT Supabase Client
 Uses the Supabase REST API directly via requests (no heavy SDK needed).
 """
-import os
 import requests
-from dotenv import load_dotenv
 
-load_dotenv()
-
-SUPABASE_URL = os.getenv("SUPABASE_URL", "")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
-
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json",
-    "Prefer": "return=representation"
-}
+# Hardcoded Supabase credentials for AIFXBOT project
+SUPABASE_URL = "https://dbrgkbkrmxgstlkaigbw.supabase.co"
+SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRicmdrYmtybXhnc3Rsa2FpZ2J3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg5ODY1NjcsImV4cCI6MjA5NDU2MjU2N30.IfIaWSwuSR0hbLn3ZuZxIWFhJlOMHdMpX4q9jEXfZ3A"
 
 class SupabaseClient:
-    def __init__(self, url: str = None, key: str = None):
-        self.url = (url or SUPABASE_URL).rstrip("/")
-        self.key = key or SUPABASE_KEY
+    def __init__(self, url: str = SUPABASE_URL, key: str = SUPABASE_KEY):
+        self.url = url.rstrip("/")
+        self.key = key
         self.headers = {
             "apikey": self.key,
             "Authorization": f"Bearer {self.key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation"
         }
+        print(f"[init] Supabase URL: {self.url}")
+        print(f"[init] Key loaded: {'Yes' if self.key else 'No - MISSING!'}")
 
     def _request(self, method: str, path: str, **kwargs):
         endpoint = f"{self.url}/rest/v1/{path.lstrip('/')}"
+        print(f"[request] {method} {endpoint}")
         resp = requests.request(method, endpoint, headers=self.headers, **kwargs)
         resp.raise_for_status()
         return resp.json() if resp.text else None
@@ -63,18 +56,22 @@ class SupabaseClient:
 
 def test_connection():
     """Test that Supabase is reachable and the key is valid."""
+    print("=" * 50)
+    print("Testing Supabase connection for AIFXBOT...")
+    print("=" * 50)
     client = SupabaseClient()
     try:
-        # health-check via a lightweight system query
         r = requests.get(
             f"{client.url}/rest/v1/",
             headers={"apikey": client.key, "Authorization": f"Bearer {client.key}"}
         )
         r.raise_for_status()
         print(f"✅ Supabase connected! Status: {r.status_code}")
+        print("=" * 50)
         return True
-    except Exception as e:
+    except requests.exceptions.RequestException as e:
         print(f"❌ Connection failed: {e}")
+        print("=" * 50)
         return False
 
 if __name__ == "__main__":
